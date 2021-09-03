@@ -1,4 +1,9 @@
-use std::net::{TcpListener, TcpStream};
+use crate::http::Request;
+use std::convert::TryFrom;
+use std::convert::TryFrom;
+use std::io::Read;
+use std::net::TcpListener;
+
 pub struct Server {
     addr: String,
 }
@@ -9,8 +14,37 @@ impl Server {
     }
 
     pub fn run(self) {
-        println!("serving on {}", self.addr);
+        match TcpListener::bind(&self.addr) {
+            Ok(listener) => {
+                println!("serving on {}", self.addr);
+                self.listen_for_connections(listener)
+            }
+            Err(e) => match e {
+                //error type??
+                _ => println!("Error: {}", e),
+            },
+        }
+    }
 
-        let listener = TcpListener::bind(&self.addr).unwrap();
+    fn listen_for_connections(self, listener: TcpListener) {
+        loop {
+            match listener.accept() {
+                Ok((mut stream, _)) => {
+                    let mut buf = [0; 1024];
+                    match stream.read(&mut buf) {
+                        Ok(_) => {
+                            println!("Received buffer -> {}", String::from_utf8_lossy(&buf));
+                            //use &buf[..] to change [u8; 1024] into &[u8]
+                            Request::try_from(&buf[..]);
+                        }
+                        Err(e) => println!("Cound not read from connection: {}", e),
+                    }
+                }
+                Err(e) => {
+                    println!("Connection failed: {:?}", e);
+                    continue;
+                }
+            }
+        }
     }
 }
