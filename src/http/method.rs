@@ -11,7 +11,6 @@ pub enum Method {
     TRACE,
     PATCH,
 }
-
 pub struct MethodError;
 
 impl FromStr for Method {
