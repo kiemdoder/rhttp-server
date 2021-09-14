@@ -20,7 +20,7 @@ impl Server {
         Self { addr }
     }
 
-    pub fn run(self, mut handler: impl Handler) {
+    pub fn run(self, handler: impl Handler) {
         match TcpListener::bind(&self.addr) {
             Ok(listener) => {
                 println!("serving on {}", self.addr);

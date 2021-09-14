@@ -19,7 +19,7 @@ impl Response {
         };
         write!(
             stream,
-            "HTTP/1.1 {} {}\r\n\r\n{}",
+            "HTTP/1.1 {} {}\r\nContent-Type: text/html; charset=utf-8\r\n\r\n{}",
             self.status_code,
             self.status_code.reason_phrase(),
             body
